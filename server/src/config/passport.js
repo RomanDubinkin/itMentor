@@ -8,7 +8,7 @@ module.exports = function(passport){
   passport.use(new GoogleStrategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3200/user/auth/google/callback"
+  callbackURL: "http://localhost:3100/user/auth/google/callback"
 },
 async (accessToken, refreshToken, profile, done)=>{
   try {
@@ -27,7 +27,7 @@ async (accessToken, refreshToken, profile, done)=>{
   passport.use('google-authz', new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3200/user/connect/google/callback"
+  callbackURL: "http://localhost:3100/user/connect/google/callback"
   },
   (accessToken, refreshToken, profile, done)=>{
     return done(null, profile.id)

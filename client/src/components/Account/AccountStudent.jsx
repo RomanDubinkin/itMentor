@@ -1,9 +1,9 @@
-import React from "react";
-import styles from "./Account.module.css";
-import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
-import Mentor from "../Mentor/Mentor";
-import { changeAuth, searchMentors, setUser } from "../../store/actions";
+import React from 'react';
+import styles from './Account.module.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import Mentor from '../Mentor/Mentor';
+import { changeAuth, searchMentors, setUser } from '../../store/actions';
 
 function AccountStudent() {
   const history = useHistory();
@@ -32,7 +32,9 @@ function AccountStudent() {
       });
       const data = await res.json();
       console.log('MENTORss', data);
-      dispatch(searchMentors({mentors: (data.map((el)=>({...el, liked: true})))}));
+      dispatch(
+        searchMentors({ mentors: data.map((el) => ({ ...el, liked: true })) })
+      );
     };
     getData();
   }, []);
@@ -43,9 +45,7 @@ function AccountStudent() {
   const onClickLogout = async () => {
     // !!!!ACHTUNG!!!! COMMENT NEXT LINE BEFORE BUILD
 
-
     const res = await fetch('http://localhost:3100/user/logout');
-
 
     //!!!!ACHTUNG UNCOMMENT NEXT LINE BEFORE BUILD
 
@@ -56,27 +56,24 @@ function AccountStudent() {
     // !!!DONT TOUCH BELOW
 
     const result = await res.json();
-    console.log("result logout", result);
+    console.log('result logout', result);
     dispatch(changeAuth(false));
     dispatch(setUser({}));
-    history.push("/");
+    history.push('/');
   };
   return (
     <>
-      {value &&
-        mentors.map((mentor) => (
-          <Mentor mentor={mentor} />
-        ))}
+      {value && mentors.map((mentor) => <Mentor mentor={mentor} />)}
       <div className={styles.account}>
         <div className={styles.nav}>
           <h1 className={styles.schedule}>{userName}'s schedule</h1>
 
-          <img className={styles.calendar} src="calendar.png" width="160"></img>
+          <img className={styles.calendar} src='calendar.png' width='160'></img>
         </div>
 
         <div className={styles.mentorsBtn}>
           <button onClick={onClickLikedMentors} className={styles.mentorsBtn}>
-            Liked Mentors <i class="fas fa-user-friends"></i>
+            Liked Mentors <i class='fas fa-user-friends'></i>
           </button>
         </div>
 

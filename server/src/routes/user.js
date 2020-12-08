@@ -11,12 +11,19 @@ router.get(
 
 router.get(
   '/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/fail' }),
+  passport.authenticate('google', {
+    failureRedirect: '/fail',
+    // successRedirect: '/user/success',
+  }),
   (req, res) => {
-    console.log('you are signed in');
-    res.json('signed in');
+    res.json(req.user);
   }
 );
+// (req, res) => {
+//   console.log('you are signed in');
+//   // res.json('signed in');
+//   res.redirect('/user/auth/local');
+// }
 
 router.get(
   '/connect/google',
@@ -37,7 +44,10 @@ router.get(
 
 router.post(
   '/auth/local',
-  passport.authenticate('local', { failureRedirect: '/fail' }),
+  passport.authenticate('local', {
+    failureRedirect: '/fail',
+    // successRedirect: '/user/success',
+  }),
   async (req, res) => {
     if (
       req.body.lastName !== '' ||
@@ -68,7 +78,8 @@ router.post(
       }
     }
     console.log('you are signed in locally');
-    res.json(req.user);
+    const newUser = await User.findById(req.user._id);
+    res.json(newUser);
   }
 );
 
@@ -103,8 +114,9 @@ router.get(
     next();
   },
   async (req, res) => {
-    const user = await User.findOne().populate('mentors');
-    res.json(user);
+    // const user = await User.findOne().populate('mentors');
+    // res.json(user);
+    res.status(515);
   }
 );
 

@@ -2,7 +2,7 @@ require('dotenv').config();
 const User = require('../models/User.js');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
-const {GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET} = process.env;
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 
 module.exports = function(passport){
   passport.use(new GoogleStrategy({
@@ -42,37 +42,76 @@ async (accessToken, refreshToken, profile, done)=>{
           const newUser = new User({contacts: username, password: password});
           try {
             await newUser.save();
-          } catch (err) {
-            if (err.keyValue.googleId !== null) {
-              console.log('Error', err);
-            }
-          };
-          return done(null, newUser);
-        } 
-        if ((user) && (user.password !== password)) {
-          return done(null, false,{ message: 'Incorrect password.' });
+            return done(null, newUser);
+          }
+          return done(null, user);
+        } catch (err) {
+          return done(err);
         }
-        return done(null, user);
-      } catch(err) {
-        return done(err);
       }
-  }))
+    )
+  );
 
+  passport.use(
+    'google-authz',
+    new GoogleStrategy(
+      {
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        callbackURL: 'http://localhost:3100/user/connect/google/callback',
+      },
+      (accessToken, refreshToken, profile, done) => {
+        return done(null, profile.id);
+      }
+    )
+  );
 
+  passport.use(
+    new LocalStrategy(
+      {
+        usernameField: 'contacts',
+      },
+      async function (username, password, done) {
+        try {
+          const user = await User.findOne({ contacts: username });
+          if (!user) {
+            const newUser = new User({
+              contacts: username,
+              password: password,
+            });
+            try {
+              await newUser.save();
+            } catch (err) {
+              if (err.keyValue.googleId !== null) {
+                console.log('Error', err);
+              }
+            }
+            return done(null, newUser);
+          }
+          if (user && user.password !== password) {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
+          return done(null, user);
+        } catch (err) {
+          return done(err);
+        }
+      }
+    )
+  );
 
- passport.serializeUser((user,done)=>{
-   if (user._id) {
-     return done(null, user._id);
-   }
-   done(null, user);
- });
-
- passport.deserializeUser((id, done)=>{
-  User.findById(id, function(err, user){
-    if (!user) {
-      return done(err, id);
+  passport.serializeUser((user, done) => {
+    if (user._id) {
+      return done(null, user._id);
     }
-    done(err, user);
+    done(null, user);
   });
- });
-}
+
+  passport.deserializeUser((id, done) => {
+    User.findById(id, function (err, user) {
+      if (!user) {
+        return done(err, id);
+      }
+      done(err, user);
+    });
+  });
+};

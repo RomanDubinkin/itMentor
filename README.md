@@ -9,6 +9,8 @@ Here you can make search by skills, price and your timezone:
 Used stack: 
 React, Redux, MongoDB, Mongoose, Express, CORS, Passport.js. 
 
+try it at https://servertestmentor.herokuapp.com
+
 Team:
 Anastasiia Soltoeva,
 Gayane Zurnachyan,
